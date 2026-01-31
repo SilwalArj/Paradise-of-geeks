@@ -1,0 +1,35 @@
+<div id="cookie-consent" class="fixed bottom-0 left-0 right-0 bg-gray-900 border-t border-gray-800 p-4 z-50 hidden">
+    <div class="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between">
+        <p class="text-gray-300 mb-4 md:mb-0">
+            We use cookies and analytics to improve your experience. 
+            <a href="/privacy" class="text-blue-400 hover:text-blue-300">Learn more</a>
+        </p>
+        <div class="flex space-x-4">
+            <button onclick="acceptCookies()" class="btn btn-sm">
+                Accept All
+            </button>
+            <button onclick="rejectCookies()" class="btn btn-outline btn-sm">
+                Reject
+            </button>
+        </div>
+    </div>
+</div>
+
+<script>
+    if (!localStorage.getItem('cookie_consent')) {
+        document.getElementById('cookie-consent').classList.remove('hidden');
+    }
+    
+    function acceptCookies() {
+        localStorage.setItem('cookie_consent', 'accepted');
+        document.getElementById('cookie-consent').classList.add('hidden');
+        window.analyticsEnabled = true;
+    }
+    
+    function rejectCookies() {
+        localStorage.setItem('cookie_consent', 'rejected');
+        document.getElementById('cookie-consent').classList.add('hidden');
+        window.analyticsEnabled = false;
+        window.analytics = null;
+    }
+</script>

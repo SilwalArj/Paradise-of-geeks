@@ -1,0 +1,35 @@
+<!-- Enhanced Search -->
+<div class="search-container mb-8">
+    <div class="relative max-w-2xl mx-auto">
+        <form action="/search" method="GET" class="flex gap-2">
+            <div class="relative flex-1">
+                <input type="text" 
+                       name="q" 
+                       value="{{ search_query }}"
+                       placeholder="Search articles, tutorials, guides..."
+                       class="w-full bg-gray-800/70 border border-gray-700 rounded-xl py-3 px-4 pl-12 text-lg focus:outline-none focus:border-green-500">
+                <i class="fas fa-search absolute left-4 top-4 text-gray-500"></i>
+            </div>
+            <button type="submit" 
+                    class="btn px-6">
+                <i class="fas fa-search mr-2"></i> Search
+            </button>
+        </form>
+        
+        <!-- Search filters -->
+        <div class="flex flex-wrap gap-2 mt-3 justify-center">
+            <a href="/search?q={{ search_query }}&sort=recent" 
+               class="text-sm px-3 py-1 rounded-full {% if sort == 'recent' %}bg-green-500 text-white{% else %}bg-gray-800 text-gray-400{% endif %}">
+                Newest
+            </a>
+            <a href="/search?q={{ search_query }}&sort=popular" 
+               class="text-sm px-3 py-1 rounded-full {% if sort == 'popular' %}bg-green-500 text-white{% else %}bg-gray-800 text-gray-400{% endif %}">
+                Most Viewed
+            </a>
+            <a href="/search?q={{ search_query }}&sort=title" 
+               class="text-sm px-3 py-1 rounded-full {% if sort == 'title' %}bg-green-500 text-white{% else %}bg-gray-800 text-gray-400{% endif %}">
+                A-Z
+            </a>
+        </div>
+    </div>
+</div>

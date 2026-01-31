@@ -1,0 +1,81 @@
+<!-- Meta Tags -->
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<!-- In seo_meta.html -->
+<meta property="og:image" content="https://via.placeholder.com/1200x630/0f172a/4ade80?text=Paradise+of+Geeks">
+
+{% if seo_title %}
+    <title>{{ seo_title }} | Paradise of Geeks</title>
+    <meta property="og:title" content="{{ seo_title }}">
+    <meta name="twitter:title" content="{{ seo_title }}">
+{% else %}
+    <title>Paradise of Geeks | Tech Blog for Linux & Python Developers</title>
+    <meta property="og:title" content="Paradise of Geeks">
+    <meta name="twitter:title" content="Paradise of Geeks">
+{% endif %}
+
+{% if seo_description %}
+    <meta name="description" content="{{ seo_description }}">
+    <meta property="og:description" content="{{ seo_description }}">
+    <meta name="twitter:description" content="{{ seo_description }}">
+{% else %}
+    <meta name="description" content="Tech blog covering Linux, Python, AI, and web development. Tutorials, guides, and insights for developers.">
+    <meta property="og:description" content="Tech blog covering Linux, Python, AI, and web development.">
+    <meta name="twitter:description" content="Tech blog covering Linux, Python, AI, and web development.">
+{% endif %}
+
+{% if seo_keywords %}
+    <meta name="keywords" content="{{ seo_keywords }}">
+{% else %}
+    <meta name="keywords" content="Linux, Python, programming, web development, AI, machine learning, DevOps, tutorials, tech blog">
+{% endif %}
+
+{% if seo_image %}
+    <meta property="og:image" content="{{ seo_image }}">
+    <meta name="twitter:image" content="{{ seo_image }}">
+{% else %}
+    <meta property="og:image" content="{{ url_for('static', filename='images/og-default.jpg', _external=True) }}">
+    <meta name="twitter:image" content="{{ url_for('static', filename='images/og-default.jpg', _external=True) }}">
+{% endif %}
+
+<!-- Open Graph / Facebook -->
+<meta property="og:type" content="website">
+<meta property="og:url" content="{{ request.url }}">
+<meta property="og:site_name" content="Paradise of Geeks">
+
+<!-- Twitter -->
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:site" content="@paradiseofgeeks">
+<meta name="twitter:creator" content="@paradiseofgeeks">
+
+<!-- Canonical URL -->
+<link rel="canonical" href="{{ request.url }}">
+
+<!-- Robots -->
+<meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1">
+
+<!-- Structured Data for Google -->
+<script type="application/ld+json">
+{
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    "name": "Paradise of Geeks",
+    "url": "https://paradiseofgeeks.com",
+    "description": "Tech blog for Linux and Python developers",
+    "publisher": {
+        "@type": "Organization",
+        "name": "Paradise of Geeks",
+        "logo": {
+            "@type": "ImageObject",
+            "url": "{{ url_for('static', filename='images/logo.png', _external=True) }}"
+        }
+    },
+    "mainEntityOfPage": {
+        "@type": "WebPage",
+        "@id": "{{ request.url }}"
+    }
+}
+</script>
+
+<!-- For Blog Posts (will be added by post.html) -->
+{% block structured_data %}{% endblock %}

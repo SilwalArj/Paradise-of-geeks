@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contact | Paradise of Geeks</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="apple-touch-icon" sizes="180x180" href="static/images/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="static/images/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="static/images/favicon-16x16.png">
+    <link rel="manifest" href="static/images/site.webmanifest">
+    <style>
+        .gradient-bg {
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+        }
+        .social-card {
+            transition: all 0.3s ease;
+        }
+        .social-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+        }
+    </style>
+</head>
+<body class="gradient-bg text-gray-100 min-h-screen">
+    <nav class="sticky top-0 z-50 bg-gray-900/90 backdrop-blur-sm border-b border-gray-800">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <a href="/" class="text-2xl font-bold bg-gradient-to-r from-green-400 to-blue-500 bg-clip-text text-transparent">
+                    <i class="fas fa-terminal mr-2"></i>Paradise of Geeks
+                </a>
+                <div class="flex items-center space-x-8">
+                    <a href="/" class="hover:text-green-400">Home</a>
+                    <a href="/blog" class="hover:text-green-400">Blog</a>
+                    <a href="/contact" class="text-green-400 font-bold">Contact</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="max-w-7xl mx-auto px-4 py-16">
+        <div class="text-center mb-12">
+            <h1 class="text-4xl md:text-5xl font-bold mb-4">
+                <span class="bg-gradient-to-r from-green-400 to-blue-500 bg-clip-text text-transparent">
+                    Connect With Us
+                </span>
+            </h1>
+            <p class="text-gray-400 max-w-2xl mx-auto">
+                Join our tech community and stay updated with the latest in Linux, Python, and web development.
+            </p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-4xl mx-auto">
+            <a href="https://github.com/SilwalArj" target="_blank" 
+               class="social-card bg-gray-800/50 rounded-2xl p-8 text-center">
+                <div class="text-5xl mb-4 text-gray-300">
+                    <i class="fab fa-github"></i>
+                </div>
+                <h3 class="text-xl font-bold mb-2 text-green-400">GitHub</h3>
+                <p class="text-gray-400">Check out our open-source projects</p>
+            </a>
+
+            <a href="https://discord.com" target="_blank" 
+               class="social-card bg-gray-800/50 rounded-2xl p-8 text-center">
+                <div class="text-5xl mb-4 text-blue-400">
+                    <i class="fab fa-discord"></i>
+                </div>
+                <h3 class="text-xl font-bold mb-2 text-blue-400">Discord</h3>
+                <p class="text-gray-400">Join our developer community</p>
+            </a>
+
+            <a href="https://instagram.com" target="_blank" 
+               class="social-card bg-gray-800/50 rounded-2xl p-8 text-center">
+                <div class="text-5xl mb-4 text-pink-400">
+                    <i class="fab fa-instagram"></i>
+                </div>
+                <h3 class="text-xl font-bold mb-2 text-pink-400">Instagram</h3>
+                <p class="text-gray-400">Follow for tech tips & updates</p>
+            </a>
+        </div>
+
+        <div class="max-w-2xl mx-auto mt-16">
+            <div class="bg-gray-800/50 rounded-2xl p-8">
+                <h2 class="text-2xl font-bold mb-6 text-center">Send us a Message</h2>
+                <form id="contact-form">
+                    <div class="mb-6">
+                        <label class="block text-gray-400 mb-2">Your Name</label>
+                        <input type="text" 
+                               class="w-full bg-gray-900/50 border border-gray-700 rounded-lg px-4 py-3 focus:outline-none focus:border-green-500"
+                               placeholder="Enter your name">
+                    </div>
+                    <div class="mb-6">
+                        <label class="block text-gray-400 mb-2">Email Address</label>
+                        <input type="email" 
+                               class="w-full bg-gray-900/50 border border-gray-700 rounded-lg px-4 py-3 focus:outline-none focus:border-green-500"
+                               placeholder="you@example.com">
+                    </div>
+                    <div class="mb-6">
+                        <label class="block text-gray-400 mb-2">Message</label>
+                        <textarea rows="4" 
+                                  class="w-full bg-gray-900/50 border border-gray-700 rounded-lg px-4 py-3 focus:outline-none focus:border-green-500"
+                                  placeholder="Your message here..."></textarea>
+                    </div>
+                    <button type="submit" 
+                            class="w-full bg-green-500 hover:bg-green-600 text-white py-3 rounded-lg font-semibold">
+                        Send Message
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('contact-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            alert('Thank you! Your message has been sent.');
+            this.reset();
+        });
+    </script>
+</body>
+</html>

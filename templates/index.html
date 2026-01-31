@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Paradise of Geeks - Tech Blog</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="apple-touch-icon" sizes="180x180" href="static/images/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="static/images/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="static/images/favicon-16x16.png">
+    <link rel="manifest" href="static/images/site.webmanifest">
+    <style>
+        .gradient-bg {
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+        }
+        .card-hover {
+            transition: all 0.3s ease;
+        }
+        .card-hover:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+        }
+        
+    </style>
+</head>
+<body class="gradient-bg text-gray-100 min-h-screen">
+    <nav class="sticky top-0 z-50 bg-gray-900/90 backdrop-blur-sm border-b border-gray-800">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <div class="flex items-center">
+                    <a href="/" class="text-2xl font-bold bg-gradient-to-r from-green-400 to-blue-500 bg-clip-text text-transparent">
+                        <i class="fas fa-terminal mr-2"></i>Paradise of Geeks
+                    </a>
+                </div>
+
+                <div class="hidden md:flex items-center space-x-8">
+                    <a href="/" class="hover:text-green-400 font-medium">Home</a>
+                    <a href="/blog" class="hover:text-green-400 font-medium">Blog</a>
+                    <a href="/contact" class="hover:text-green-400 font-medium">Contact</a>
+                </div>
+
+                <button id="mobile-menu-button" class="md:hidden">
+                    <i class="fas fa-bars text-xl"></i>
+                </button>
+            </div>
+
+            <div id="mobile-menu" class="md:hidden hidden py-4 space-y-4">
+                <a href="/" class="block hover:text-green-400">Home</a>
+                <a href="/blog" class="block hover:text-green-400">Blog</a>
+                <a href="/contact" class="block hover:text-green-400">Contact</a>
+            </div>
+        </div>
+    </nav>
+
+    <section class="py-16 px-4">
+        <div class="max-w-7xl mx-auto text-center">
+            <h1 class="text-5xl md:text-7xl font-bold mb-6">
+                <span class="bg-gradient-to-r from-green-400 to-blue-500 bg-clip-text text-transparent">
+                    Tech Insights
+                </span>
+                <br>
+                <span class="text-3xl md:text-4xl text-gray-300">For Passionate Geeks</span>
+            </h1>
+            <p class="text-xl text-gray-400 mb-10 max-w-3xl mx-auto">
+                Dive into Linux, Python, AI, and cutting-edge technology. 
+                Tutorials, guides, and insights for developers.
+            </p>
+            <div class="space-x-4">
+                <a href="/blog" class="bg-green-500 hover:bg-green-600 text-white px-8 py-3 rounded-lg font-semibold text-lg inline-block">
+                    Read Articles
+                </a>
+                <a href="#featured" class="border border-green-500 text-green-400 hover:bg-green-500 hover:text-white px-8 py-3 rounded-lg font-semibold text-lg inline-block">
+                    Latest Post
+                </a>
+            </div>
+        </div>
+    </section>
+
+{% if featured %}
+<section id="featured" class="featured-section py-12 px-4">
+    <div class="max-w-6xl mx-auto">
+        <h2 class="text-3xl font-bold mb-8 text-center gradient-text">Featured Article</h2>
+        <div class="card overflow-hidden group hover:shadow-2xl transition-all duration-300">
+            <div class="flex flex-col md:flex-row">
+                <div class="md:w-2/5">
+                    {% if featured.thumbnail %}
+                    <div class="h-64 md:h-full overflow-hidden">
+                        <img src="{{ featured.thumbnail }}" 
+                             alt="{{ featured.title }}"
+                             class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                    </div>
+                    {% else %}
+                    <div class="h-64 md:h-full bg-gradient-to-br from-green-500/30 to-blue-500/30 flex items-center justify-center p-8">
+                        <div class="text-center">
+                            <i class="fas fa-star text-6xl text-green-400/50 mb-4"></i>
+                            <h3 class="text-xl font-bold text-green-400">Featured Post</h3>
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
+
+                <div class="md:w-3/5 p-8">
+                    <div class="flex items-center mb-4">
+                        <span class="bg-gradient-to-r from-green-500 to-blue-500 text-white px-4 py-1 rounded-full text-sm font-medium">
+                            <i class="fas fa-star mr-2"></i> Featured
+                        </span>
+                        <span class="ml-4 text-gray-500 text-sm">{{ featured.date }}</span>
+                    </div>
+                    
+                    <h3 class="text-3xl font-bold mb-4 text-green-400">{{ featured.title }}</h3>
+
+                    <p class="text-gray-300 mb-6 text-lg">
+                        {{ featured.preview|truncate(80) }}
+                    </p>
+                    
+                    <a href="/post/{{ featured.id }}" class="btn inline-flex items-center">
+                        <i class="fas fa-book-open mr-2"></i> Read Full Article
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endif %}
+
+<section class="recent-posts py-12 px-4">
+    <div class="max-w-7xl mx-auto">
+        <h2 class="text-3xl font-bold mb-8 text-center gradient-text">Recent Articles</h2>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+            {% for post in posts %}
+            <div class="card group hover:shadow-2xl transition-all duration-300">
+                {% if post.thumbnail %}
+                <div class="mb-4 overflow-hidden rounded-t-xl">
+                    <img src="{{ post.thumbnail }}" 
+                         alt="{{ post.title }}"
+                         class="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-300">
+                </div>
+                {% else %}
+                <div class="mb-4 bg-gradient-to-br from-green-500/20 to-blue-500/20 h-48 rounded-t-xl flex items-center justify-center">
+                    <i class="fas fa-terminal text-4xl text-green-400/50"></i>
+                </div>
+                {% endif %}
+                
+                <div class="p-6">
+                    <div class="flex items-center mb-4">
+                        <div class="w-10 h-10 rounded-full bg-gradient-to-r from-green-500 to-blue-500 flex items-center justify-center">
+                            <i class="fas fa-terminal text-white"></i>
+                        </div>
+                        <div class="ml-3">
+                            <div class="text-sm text-gray-400">{{ post.date }}</div>
+                        </div>
+                    </div>
+                    <h3 class="text-xl font-bold mb-3 text-green-400">{{ post.title }}</h3>
+                    <p class="text-gray-400 mb-4">{{ post.preview|truncate(80) }}</p>
+                    <a href="/post/{{ post.id }}" class="text-blue-400 hover:text-blue-300 font-medium inline-flex items-center">
+                        Read More <i class="fas fa-arrow-right ml-2"></i>
+                    </a>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+    <footer class="bg-gray-900/50 border-t border-gray-800 py-12 px-4 mt-16">
+        <div class="max-w-7xl mx-auto">
+            <div class="flex flex-col md:flex-row justify-between items-center">
+                <div class="mb-6 md:mb-0">
+                    <div class="text-2xl font-bold bg-gradient-to-r from-green-400 to-blue-500 bg-clip-text text-transparent mb-2">
+                        Paradise of Geeks
+                    </div>
+                    <p class="text-gray-500">Tech blog for passionate developers</p>
+                </div>
+                <div class="flex space-x-6">
+                    <a href="#" class="text-gray-400 hover:text-green-400">
+                        <i class="fab fa-github text-xl"></i>
+                    </a>
+                    <a href="#" class="text-gray-400 hover:text-blue-400">
+                        <i class="fab fa-twitter text-xl"></i>
+                    </a>
+                    <a href="#" class="text-gray-400 hover:text-pink-400">
+                        <i class="fab fa-instagram text-xl"></i>
+                    </a>
+                </div>
+            </div>
+            <div class="text-center text-gray-600 mt-8 pt-8 border-t border-gray-800">
+                &copy; 2026 Paradise of Geeks. All rights reserved.
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        document.getElementById('mobile-menu-button').addEventListener('click', function() {
+            const menu = document.getElementById('mobile-menu');
+            menu.classList.toggle('hidden');
+        });
+
+        fetch('/api/analytics')
+            .then(response => response.json())
+            .then(data => {
+                console.log(`Total views: ${data.views}`);
+            });
+    </script>
+</body>
+</html>
