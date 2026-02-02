@@ -10,11 +10,11 @@ import pytz
 import smtplib
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
-from flask_wtf import CSRFProtect
 from dotenv import load_dotenv
 load_dotenv()
 
 app = Flask(__name__)
+
 SECRET_KEY = os.environ.get('SECRET_KEY')
 if not SECRET_KEY:
     import secrets
