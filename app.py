@@ -21,36 +21,17 @@ if not SECRET_KEY:
     SECRET_KEY = secrets.token_hex(32)
     print(f"Warning: Generated temporary SECRET_KEY: {SECRET_KEY[:10]}...")
 
-app.config['SECRET_KEY'] = SECRET_KEY
-csrf = CSRFProtect(app)
-
-BLOGGER_URL = "https://paradiseofgeeks.blogspot.com"
+app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'dev-key-for-local')
+BLOGGER_URL = os.environ.get('BLOGGER_URL', "https://paradiseofgeeks.blogspot.com")
 BLOGGER_JSON_FEED = f"{BLOGGER_URL}/feeds/posts/default?alt=json"
 
 ADSENSE_PUBLISHER_ID = "ca-pub-7442313663988423"  
 ADSENSE_ENABLED = True
 
-import os
-import sqlite3
-
-# Fix database path for Vercel
-def get_db_path():
-    if os.environ.get('VERCEL') or os.environ.get('VERCEL_ENV'):
-        # On Vercel, use /tmp directory which is writable
-        return '/tmp/blog.db'
-    else:
-        # Local development
-        return 'blog.db'
-
-# Update all database connections
 def init_db():
-    db_path = get_db_path()
-    print(f"Using database at: {db_path}")
-    
-    conn = sqlite3.connect(db_path)
+    conn = sqlite3.connect('blog.db')  # Normal path works on Render!
     c = conn.cursor()
     
-    # Create analytics table
     c.execute('''
         CREATE TABLE IF NOT EXISTS analytics (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -68,49 +49,7 @@ def init_db():
     conn.commit()
     conn.close()
 
-# Update the track_event function
-def track_event(event_type, data=None):
-    """Track analytics events - safe for Vercel"""
-    try:
-        db_path = get_db_path()
-        conn = sqlite3.connect(db_path)
-        c = conn.cursor()
-        
-        # Create table if not exists
-        c.execute('''
-            CREATE TABLE IF NOT EXISTS analytics_events (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                session_id TEXT,
-                event_type TEXT,
-                event_data TEXT,
-                page_url TEXT,
-                user_agent TEXT,
-                ip_address TEXT,
-                referrer TEXT,
-                timestamp DATETIME DEFAULT CURRENT_TIMESTAMP
-            )
-        ''')
-        
-        # Insert event
-        c.execute('''
-            INSERT INTO analytics_events 
-            (event_type, event_data, page_url, user_agent, ip_address, referrer)
-            VALUES (?, ?, ?, ?, ?, ?)
-        ''', (
-            event_type,
-            json.dumps(data) if data else None,
-            request.path,
-            request.user_agent.string,
-            request.remote_addr,
-            request.referrer
-        ))
-        
-        conn.commit()
-        conn.close()
-        
-    except Exception as e:
-        # Don't crash the app if analytics fails
-        print(f"Analytics error (non-critical): {e}")
+init_db()
 
 def clean_html_content(html_content):
     if not html_content:
@@ -752,23 +691,13 @@ def sitemap():
 @app.route('/robots.txt')
 def robots():
     robots_txt = """User-agent: *
-Allow: /
-Disallow: /admin
-Disallow: /api/
+    Allow: /
+    Disallow: /admin
+    Disallow: /api/
 
-Sitemap: {}/sitemap.xml
-""".format(request.host_url.rstrip('/'))
+    Sitemap: {}/sitemap.xml
+    """.format(request.host_url.rstrip('/'))
     return Response(robots_txt, mimetype='text/plain')
-
-@app.after_request
-def track_page_view(response):
-    if request.endpoint and request.endpoint != 'static':
-        track_event('page_view', {
-            'endpoint': request.endpoint,
-            'method': request.method,
-            'status_code': response.status_code
-        })
-    return response
 
 @app.after_request
 def add_security_headers(response):
@@ -786,4 +715,5 @@ def add_cache_headers(response):
     return response
 
 if __name__ == '__main__':
-    app.run(debug=True, port=5000)
+    port = int(os.environ.get('PORT', 5000))
+    app.run(host='0.0.0.0', port=port, debug=False)
