@@ -1,145 +1,79 @@
-<!-- templates/search_results.html -->
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ seo_title|default('Search Results') }}</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <style>
-        .gradient-bg {
-            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
-        }
-    </style>
-</head>
-<body class="gradient-bg text-gray-100 min-h-screen">
-    {% include 'navbar.html' %}  <!-- Or your navigation include -->
-    
-    <div class="max-w-7xl mx-auto px-4 py-12">
-        <div class="mb-8">
-            <h1 class="text-4xl font-bold mb-4">Search Results</h1>
-            
-            <!-- Search form -->
-            <form action="{{ url_for('search') }}" method="get" class="mb-6">
-                <div class="flex gap-2">
-                    <input 
-                        type="text" 
-                        name="q" 
-                        value="{{ search_query }}"
-                        placeholder="Search articles..."
-                        class="flex-1 bg-gray-800 border border-gray-700 rounded-xl px-6 py-4 text-lg focus:outline-none focus:border-green-500"
-                    >
-                    <button type="submit" class="bg-gradient-to-r from-green-500 to-blue-500 hover:from-green-600 hover:to-blue-600 text-white font-medium px-6 py-4 rounded-xl">
-                        <i class="fas fa-search"></i>
-                    </button>
-                </div>
-                
-                <!-- Sort options -->
-                <div class="flex items-center mt-4">
-                    <span class="text-gray-500 mr-4">Sort by:</span>
-                    <a href="{{ url_for('search') }}?q={{ search_query }}&sort=recent" 
-                       class="mr-4 {% if sort == 'recent' %}text-green-400{% else %}text-gray-400 hover:text-white{% endif %}">
-                        Recent
-                    </a>
-                    <a href="{{ url_for('search') }}?q={{ search_query }}&sort=title" 
-                       class="mr-4 {% if sort == 'title' %}text-green-400{% else %}text-gray-400 hover:text-white{% endif %}">
-                        Title
-                    </a>
-                    <a href="{{ url_for('search') }}?q={{ search_query }}&sort=popular" 
-                       class="{% if sort == 'popular' %}text-green-400{% else %}text-gray-400 hover:text-white{% endif %}">
-                        Relevance
-                    </a>
-                </div>
-            </form>
-            
-            <!-- Results count -->
-            <p class="text-gray-400 mb-8">
-                {% if search_query %}
-                    Found {{ results_count }} result{% if results_count != 1 %}s{% endif %} for "{{ search_query }}"
-                {% else %}
-                    Showing all articles
-                {% endif %}
-            </p>
-        </div>
+{% extends "base.html" %}
+
+{% block title %}{{ seo_title|default('Search Results') }}{% endblock %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto px-4 py-12">
+    <div class="mb-8">
+        <h1 class="text-4xl font-bold mb-4">Search Results</h1>
         
-        <!-- Results -->
-        <div class="grid gap-6">
-            {% if results %}
-                {% for post in results %}
-                <div class="bg-gray-800/50 rounded-2xl p-6 hover:bg-gray-800/70 transition-colors">
-                    <a href="{{ url_for('post_detail', post_id=post.id) }}" class="block">
-                        <div class="flex flex-col md:flex-row gap-6">
-                            {% if post.thumbnail %}
-                            <div class="md:w-48 flex-shrink-0">
-                                <img src="{{ post.thumbnail }}" alt="{{ post.title }}" 
-                                     class="w-full h-48 md:h-32 object-cover rounded-xl">
-                            </div>
-                            {% endif %}
-                            <div class="flex-1">
-                                <h3 class="text-xl font-bold mb-2 text-white hover:text-green-400">{{ post.title }}</h3>
-                                <p class="text-gray-400 mb-3">{{ post.preview }}</p>
-                                <div class="flex items-center text-gray-500 text-sm">
-                                    <i class="far fa-calendar mr-2"></i>
-                                    <span>{{ post.date }}</span>
-                                </div>
-                            </div>
-                        </div>
-                    </a>
-                </div>
-                {% endfor %}
-                
-                <!-- Pagination -->
-                {% if total_pages > 1 %}
-                <div class="flex justify-center mt-8">
-                    <div class="flex gap-2">
-                        {% if page > 1 %}
-                        <a href="{{ url_for('search') }}?q={{ search_query }}&sort={{ sort }}&page={{ page-1 }}" 
-                           class="bg-gray-800 hover:bg-gray-700 px-4 py-2 rounded-lg">
-                            Previous
-                        </a>
-                        {% endif %}
-                        
-                        {% for p in range(1, total_pages + 1) %}
-                            {% if p == page %}
-                            <span class="bg-green-500 px-4 py-2 rounded-lg">{{ p }}</span>
-                            {% else %}
-                            <a href="{{ url_for('search') }}?q={{ search_query }}&sort={{ sort }}&page={{ p }}" 
-                               class="bg-gray-800 hover:bg-gray-700 px-4 py-2 rounded-lg">
-                                {{ p }}
-                            </a>
-                            {% endif %}
-                        {% endfor %}
-                        
-                        {% if page < total_pages %}
-                        <a href="{{ url_for('search') }}?q={{ search_query }}&sort={{ sort }}&page={{ page+1 }}" 
-                           class="bg-gray-800 hover:bg-gray-700 px-4 py-2 rounded-lg">
-                            Next
-                        </a>
-                        {% endif %}
-                    </div>
-                </div>
-                {% endif %}
-                
+        <!-- Search form -->
+        <form action="{{ url_for('search') }}" method="get" class="mb-6">
+            <div class="flex gap-2">
+                <input 
+                    type="text" 
+                    name="q" 
+                    value="{{ search_query }}"
+                    placeholder="Search articles..."
+                    class="flex-1 bg-gray-800 border border-gray-700 rounded-xl px-6 py-4 text-lg focus:outline-none focus:border-green-500"
+                >
+                <button type="submit" class="bg-gradient-to-r from-green-500 to-blue-500 hover:from-green-600 hover:to-blue-600 text-white font-medium px-6 py-4 rounded-xl">
+                    <i class="fas fa-search"></i>
+                </button>
+            </div>
+        </form>
+        
+        <!-- Results count -->
+        <p class="text-gray-400 mb-8">
+            {% if search_query %}
+                Found {{ total_results }} result{% if total_results != 1 %}s{% endif %} for "{{ search_query }}"
             {% else %}
-                <div class="text-center py-12">
-                    <i class="fas fa-search text-5xl text-gray-600 mb-4"></i>
-                    <h3 class="text-2xl font-bold mb-2">No results found</h3>
-                    <p class="text-gray-400 mb-6">
-                        {% if search_query %}
-                            No articles found for "{{ search_query }}"
-                        {% else %}
-                            No articles available
-                        {% endif %}
-                    </p>
-                    <a href="{{ url_for('blog') }}" class="bg-gradient-to-r from-green-500 to-blue-500 hover:from-green-600 hover:to-blue-600 text-white font-medium py-3 px-6 rounded-xl">
-                        Browse All Articles
-                    </a>
-                </div>
+                Showing all articles
             {% endif %}
-        </div>
+        </p>
     </div>
     
-    {% include 'footer.html' %}  <!-- Your footer include -->
-</body>
-</html>
+    <!-- Results -->
+    <div class="grid gap-6">
+        {% if results %}
+            {% for post in results %}
+            <div class="bg-gray-800/50 rounded-2xl p-6 hover:bg-gray-800/70 transition-colors">
+                <a href="{{ url_for('post_detail', post_id=post.id) }}" class="block">
+                    <div class="flex flex-col md:flex-row gap-6">
+                        {% if post.thumbnail %}
+                        <div class="md:w-48 flex-shrink-0">
+                            <img src="{{ post.thumbnail }}" alt="{{ post.title }}" 
+                                 class="w-full h-48 md:h-32 object-cover rounded-xl">
+                        </div>
+                        {% endif %}
+                        <div class="flex-1">
+                            <h3 class="text-xl font-bold mb-2 text-white hover:text-green-400">{{ post.title }}</h3>
+                            <p class="text-gray-400 mb-3">{{ post.preview|default('') }}</p>
+                            <div class="flex items-center text-gray-500 text-sm">
+                                <i class="far fa-calendar mr-2"></i>
+                                <span>{{ post.date|default('') }}</span>
+                            </div>
+                        </div>
+                    </div>
+                </a>
+            </div>
+            {% endfor %}
+        {% else %}
+            <div class="text-center py-12">
+                <i class="fas fa-search text-5xl text-gray-600 mb-4"></i>
+                <h3 class="text-2xl font-bold mb-2">No results found</h3>
+                <p class="text-gray-400 mb-6">
+                    {% if search_query %}
+                        No articles found for "{{ search_query }}"
+                    {% else %}
+                        No articles available at the moment
+                    {% endif %}
+                </p>
+                <a href="{{ url_for('blog') }}" class="bg-gradient-to-r from-green-500 to-blue-500 hover:from-green-600 hover:to-blue-600 text-white font-medium py-3 px-6 rounded-xl">
+                    Browse All Articles
+                </a>
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

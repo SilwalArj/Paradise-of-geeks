@@ -11,10 +11,17 @@ import smtplib
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 from flask_wtf import CSRFProtect
-
+from dotenv import load_dotenv
+load_dotenv()
 
 app = Flask(__name__)
-app.config['SECRET_KEY'] = 'ulp8@dfj7!)u41^(u64_2z#=w(fgc4p=f*ab(0cc8z=5n!+jjy'
+SECRET_KEY = os.environ.get('SECRET_KEY')
+if not SECRET_KEY:
+    import secrets
+    SECRET_KEY = secrets.token_hex(32)
+    print(f"Warning: Generated temporary SECRET_KEY: {SECRET_KEY[:10]}...")
+
+app.config['SECRET_KEY'] = SECRET_KEY
 csrf = CSRFProtect(app)
 
 BLOGGER_URL = "https://paradiseofgeeks.blogspot.com"
@@ -23,10 +30,27 @@ BLOGGER_JSON_FEED = f"{BLOGGER_URL}/feeds/posts/default?alt=json"
 ADSENSE_PUBLISHER_ID = "ca-pub-7442313663988423"  
 ADSENSE_ENABLED = True
 
-def init_db():
-    conn = sqlite3.connect('blog.db')
-    c = conn.cursor()
+import os
+import sqlite3
 
+# Fix database path for Vercel
+def get_db_path():
+    if os.environ.get('VERCEL') or os.environ.get('VERCEL_ENV'):
+        # On Vercel, use /tmp directory which is writable
+        return '/tmp/blog.db'
+    else:
+        # Local development
+        return 'blog.db'
+
+# Update all database connections
+def init_db():
+    db_path = get_db_path()
+    print(f"Using database at: {db_path}")
+    
+    conn = sqlite3.connect(db_path)
+    c = conn.cursor()
+    
+    # Create analytics table
     c.execute('''
         CREATE TABLE IF NOT EXISTS analytics (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -35,7 +59,8 @@ def init_db():
             last_updated TIMESTAMP DEFAULT CURRENT_TIMESTAMP
         )
     ''')
-
+    
+    # Insert initial analytics row
     c.execute('SELECT COUNT(*) FROM analytics WHERE id = 1')
     if c.fetchone()[0] == 0:
         c.execute('INSERT INTO analytics (id, page_views) VALUES (1, 0)')
@@ -43,7 +68,49 @@ def init_db():
     conn.commit()
     conn.close()
 
-init_db()
+# Update the track_event function
+def track_event(event_type, data=None):
+    """Track analytics events - safe for Vercel"""
+    try:
+        db_path = get_db_path()
+        conn = sqlite3.connect(db_path)
+        c = conn.cursor()
+        
+        # Create table if not exists
+        c.execute('''
+            CREATE TABLE IF NOT EXISTS analytics_events (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                session_id TEXT,
+                event_type TEXT,
+                event_data TEXT,
+                page_url TEXT,
+                user_agent TEXT,
+                ip_address TEXT,
+                referrer TEXT,
+                timestamp DATETIME DEFAULT CURRENT_TIMESTAMP
+            )
+        ''')
+        
+        # Insert event
+        c.execute('''
+            INSERT INTO analytics_events 
+            (event_type, event_data, page_url, user_agent, ip_address, referrer)
+            VALUES (?, ?, ?, ?, ?, ?)
+        ''', (
+            event_type,
+            json.dumps(data) if data else None,
+            request.path,
+            request.user_agent.string,
+            request.remote_addr,
+            request.referrer
+        ))
+        
+        conn.commit()
+        conn.close()
+        
+    except Exception as e:
+        # Don't crash the app if analytics fails
+        print(f"Analytics error (non-critical): {e}")
 
 def clean_html_content(html_content):
     if not html_content:
@@ -347,83 +414,56 @@ def post_detail(post_id):
 
 @app.route('/search')
 def search():
-    query = request.args.get('q', '').strip().lower()
-    sort_by = request.args.get('sort', 'relevance')
-    category = request.args.get('category', '')
-    
-    all_posts = get_blogger_posts()
-    results = []
-    
-    if query:
-        for post in all_posts:
-            score = 0
-            
-            if query in post['title'].lower():
-                score += 5
-            
-            if post['title'].lower() == query:
-                score += 10
-
-            if 'plain_content' in post and query in post['plain_content'].lower():
-                score += 2
-
-            for word in query.split():
-                if len(word) > 2:
-                    if word in post['title'].lower():
-                        score += 2
-                    if 'preview' in post and word in post['preview'].lower():
-                        score += 1
-            
-            if score > 0:
-                post['search_score'] = score
-                results.append(post)
-    else:
-        results = all_posts
-
-    if sort_by == 'recent':
-        results.sort(key=lambda x: x.get('date', ''), reverse=True)
-    elif sort_by == 'relevance' and query:
-        results.sort(key=lambda x: x.get('search_score', 0), reverse=True)
-    elif sort_by == 'title':
-        results.sort(key=lambda x: x['title'].lower())
-
-    page = request.args.get('page', 1, type=int)
-    per_page = 12
-    total_pages = (len(results) + per_page - 1) // per_page
-    start_idx = (page - 1) * per_page
-    end_idx = start_idx + per_page
-    paginated_results = results[start_idx:end_idx]
-
-    categories = set()
-    for post in all_posts:
-        if 'categories' in post:
-            for cat in post['categories']:
-                categories.add(cat)
-    
-    seo_meta = {}
-    if query:
+    try:
+        query = request.args.get('q', '').strip().lower()
+        sort_by = request.args.get('sort', 'relevance')
+        
+        # Get posts with error handling
+        try:
+            all_posts = get_blogger_posts()
+        except Exception as e:
+            print(f"Error getting posts: {e}")
+            all_posts = []
+        
+        results = []
+        
+        if query and all_posts:
+            # Simple search
+            for post in all_posts:
+                if query in post['title'].lower() or query in post.get('preview', '').lower():
+                    results.append(post)
+        else:
+            results = all_posts
+        
+        # Sort results
+        if sort_by == 'recent':
+            results.sort(key=lambda x: x.get('date', ''), reverse=True)
+        elif sort_by == 'title':
+            results.sort(key=lambda x: x['title'].lower())
+        
         seo_meta = generate_seo_meta(
-            title=f"Search Results: '{query}' - Paradise of Geeks",
-            description=f"Search results for {query} in tech tutorials, Linux guides, Python programming, and web development articles.",
-            keywords=f"{query}, search, tutorials, programming, tech"
+            title=f"Search Results: '{query}'" if query else "Search Articles",
+            description=f"Search results for {query}" if query else "Search tech articles",
+            keywords="search, tutorials, programming"
         )
-    else:
-        seo_meta = generate_seo_meta(
-            title="Search Tech Articles - Paradise of Geeks",
-            description="Search through all tech tutorials, Linux guides, Python programming, and web development articles.",
-            keywords="search, tutorials, programming, tech, Linux, Python, AI"
-        )
-    
-    return render_template('search_results.html',
-                         results=paginated_results,
-                         search_query=query,
-                         sort=sort_by,
-                         category=category,
-                         page=page,
-                         total_pages=total_pages,
-                         total_results=len(results),
-                         categories=sorted(categories),
-                         **seo_meta)
+        
+        return render_template('search_results.html',
+                             results=results[:12],
+                             search_query=query,
+                             sort=sort_by,
+                             page=1,
+                             total_pages=1,
+                             total_results=len(results),
+                             categories=[],
+                             **seo_meta)
+        
+    except Exception as e:
+        print(f"Search error: {e}")
+        # Return simple error page
+        return render_template('search_results.html',
+                             results=[],
+                             search_query=request.args.get('q', ''),
+                             error="Search temporarily unavailable")
 
 @app.route('/contact', methods=['GET', 'POST'])
 def contact():
@@ -719,44 +759,6 @@ Disallow: /api/
 Sitemap: {}/sitemap.xml
 """.format(request.host_url.rstrip('/'))
     return Response(robots_txt, mimetype='text/plain')
-
-def track_event(event_type, data=None):
-    try:
-        conn = sqlite3.connect('blog.db')
-        c = conn.cursor()
-        
-        c.execute('''
-            CREATE TABLE IF NOT EXISTS analytics_events (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                session_id TEXT,
-                event_type TEXT,
-                event_data TEXT,
-                page_url TEXT,
-                user_agent TEXT,
-                ip_address TEXT,
-                referrer TEXT,
-                timestamp DATETIME DEFAULT CURRENT_TIMESTAMP
-            )
-        ''')
-        
-        c.execute('''
-            INSERT INTO analytics_events 
-            (event_type, event_data, page_url, user_agent, ip_address, referrer)
-            VALUES (?, ?, ?, ?, ?, ?)
-        ''', (
-            event_type,
-            json.dumps(data) if data else None,
-            request.path,
-            request.user_agent.string,
-            request.remote_addr,
-            request.referrer
-        ))
-        
-        conn.commit()
-        conn.close()
-        
-    except Exception as e:
-        print(f"Analytics error: {e}")
 
 @app.after_request
 def track_page_view(response):
