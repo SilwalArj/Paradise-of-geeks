@@ -1,21 +1,24 @@
 {% extends "base.html" %}
 
-{% block title %}Server Error - Paradise of Geeks{% endblock %}
+{% block title %}Page Not Found - Paradise of Geeks{% endblock %}
 
 {% block content %}
 <div class="text-center py-20">
-    <div class="text-8xl font-bold mb-6 gradient-text">500</div>
-    <h1 class="text-4xl font-bold mb-4">Internal Server Error</h1>
+    <div class="text-8xl font-bold mb-6 gradient-text">404</div>
+    <h1 class="text-4xl font-bold mb-4">Page Not Found</h1>
     <p class="text-gray-400 text-lg mb-8 max-w-2xl mx-auto">
-        Something went wrong on our end. Our tech team has been notified and is working to fix it.
+        Oops! The page you're looking for seems to have wandered off into the digital wilderness.
     </p>
     <div class="flex flex-col sm:flex-row gap-4 justify-center">
         <a href="/" class="btn">
             <i class="fas fa-home mr-2"></i>Back to Home
         </a>
-        <a href="/contact" class="btn btn-outline">
-            <i class="fas fa-envelope mr-2"></i>Contact Support
+        <a href="/blog" class="btn btn-outline">
+            <i class="fas fa-newspaper mr-2"></i>Browse Articles
         </a>
+        <button onclick="history.back()" class="btn btn-outline">
+            <i class="fas fa-arrow-left mr-2"></i>Go Back
+        </button>
     </div>
 </div>
 {% endblock %}

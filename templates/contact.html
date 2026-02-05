@@ -1,122 +1,162 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Contact | Paradise of Geeks</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="apple-touch-icon" sizes="180x180" href="static/images/apple-touch-icon.png">
-    <link rel="icon" type="image/png" sizes="32x32" href="static/images/favicon-32x32.png">
-    <link rel="icon" type="image/png" sizes="16x16" href="static/images/favicon-16x16.png">
-    <link rel="manifest" href="static/images/site.webmanifest">
-    <style>
-        .gradient-bg {
-            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
-        }
-        .social-card {
-            transition: all 0.3s ease;
-        }
-        .social-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
-        }
-    </style>
-</head>
-<body class="gradient-bg text-gray-100 min-h-screen">
-    <nav class="sticky top-0 z-50 bg-gray-900/90 backdrop-blur-sm border-b border-gray-800">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex justify-between items-center h-16">
-                <a href="/" class="text-2xl font-bold bg-gradient-to-r from-green-400 to-blue-500 bg-clip-text text-transparent">
-                    <i class="fas fa-terminal mr-2"></i>Paradise of Geeks
+{% extends "base.html" %}
+
+{% block title %}Contact Us - Paradise of Geeks{% endblock %}
+
+{% block content %}
+<div class="max-w-6xl mx-auto">
+    <div class="text-center mb-12">
+        <h1 class="text-4xl font-bold mb-4 gradient-text">Get In Touch</h1>
+        <p class="text-gray-400 text-lg">Have questions, suggestions, or feedback? We'd love to hear from you!</p>
+    </div>
+
+    <div class="grid md:grid-cols-2 gap-8">
+        <div class="card p-8">
+            <h2 class="text-2xl font-bold mb-6">Send us a Message</h2>
+
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    {% for category, message in messages %}
+                    <div class="mb-6 p-4 rounded-lg {% if category == 'success' %}bg-green-500/20 text-green-400 border border-green-500/30{% else %}bg-red-500/20 text-red-400 border border-red-500/30{% endif %}">
+                        {{ message }}
+                    </div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+
+            {% if not message_sent %}
+            <form method="POST" class="space-y-6">
+                <div>
+                    <label for="name" class="block text-gray-400 mb-2">Your Name *</label>
+                    <input type="text" 
+                           id="name" 
+                           name="name" 
+                           required
+                           class="w-full bg-gray-800/50 border border-gray-700 rounded-lg px-4 py-3 focus:outline-none focus:border-green-500 transition-colors"
+                           placeholder="Enter your name">
+                </div>
+
+                <div>
+                    <label for="email" class="block text-gray-400 mb-2">Email Address *</label>
+                    <input type="email" 
+                           id="email" 
+                           name="email" 
+                           required
+                           class="w-full bg-gray-800/50 border border-gray-700 rounded-lg px-4 py-3 focus:outline-none focus:border-green-500 transition-colors"
+                           placeholder="you@example.com">
+                </div>
+
+                <div>
+                    <label for="message" class="block text-gray-400 mb-2">Your Message *</label>
+                    <textarea id="message" 
+                              name="message" 
+                              rows="5" 
+                              required
+                              class="w-full bg-gray-800/50 border border-gray-700 rounded-lg px-4 py-3 focus:outline-none focus:border-green-500 transition-colors resize-none"
+                              placeholder="What would you like to share with us?"></textarea>
+                </div>
+
+                <button type="submit" 
+                        class="w-full bg-gradient-to-r from-green-500 to-blue-500 hover:from-green-600 hover:to-blue-600 text-white font-semibold py-3 px-6 rounded-lg transition-all shadow-lg hover:shadow-xl">
+                    Send Message
+                </button>
+            </form>
+            {% else %}
+
+            <div class="text-center py-8">
+                <div class="text-green-500 text-5xl mb-4">
+                    <i class="fas fa-check-circle"></i>
+                </div>
+                <h3 class="text-2xl font-bold mb-2">Message Sent Successfully!</h3>
+                <p class="text-gray-400 mb-6">Thank you for contacting us. We'll get back to you soon.</p>
+                <a href="/contact" 
+                   class="inline-block bg-gray-800 hover:bg-gray-700 text-white font-semibold py-3 px-6 rounded-lg transition-colors">
+                    Send Another Message
                 </a>
-                <div class="flex items-center space-x-8">
-                    <a href="/" class="hover:text-green-400">Home</a>
-                    <a href="/blog" class="hover:text-green-400">Blog</a>
-                    <a href="/contact" class="text-green-400 font-bold">Contact</a>
+            </div>
+            {% endif %}
+        </div>
+
+        <div class="space-y-6">
+            <div class="card p-6">
+                <h3 class="text-xl font-bold mb-6">Contact Information</h3>
+                
+                <div class="space-y-4">
+                    <div class="flex items-center gap-4">
+                        <div class="bg-green-500/20 p-3 rounded-lg">
+                            <i class="fas fa-envelope text-green-400 text-xl"></i>
+                        </div>
+                        <div>
+                            <h4 class="font-medium">Email Us</h4>
+                            <a href="mailto:contact@paradiseofgeeks.com" class="text-green-400 hover:text-green-300">
+                                contact@paradiseofgeeks.com
+                            </a>
+                        </div>
+                    </div>
+
+                    <div class="flex items-center gap-4">
+                        <div class="bg-blue-500/20 p-3 rounded-lg">
+                            <i class="fas fa-clock text-blue-400 text-xl"></i>
+                        </div>
+                        <div>
+                            <h4 class="font-medium">Response Time</h4>
+                            <p class="text-gray-400">We aim to respond within 24-48 hours</p>
+                        </div>
+                    </div>
+
+                    <div class="flex items-center gap-4">
+                        <div class="bg-purple-500/20 p-3 rounded-lg">
+                            <i class="fas fa-users text-purple-400 text-xl"></i>
+                        </div>
+                        <div>
+                            <h4 class="font-medium">Join Our Community</h4>
+                            <p class="text-gray-400">Connect with other developers</p>
+                        </div>
+                    </div>
                 </div>
             </div>
-        </div>
-    </nav>
 
-    <div class="max-w-7xl mx-auto px-4 py-16">
-        <div class="text-center mb-12">
-            <h1 class="text-4xl md:text-5xl font-bold mb-4">
-                <span class="bg-gradient-to-r from-green-400 to-blue-500 bg-clip-text text-transparent">
-                    Connect With Us
-                </span>
-            </h1>
-            <p class="text-gray-400 max-w-2xl mx-auto">
-                Join our tech community and stay updated with the latest in Linux, Python, and web development.
-            </p>
-        </div>
-
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-4xl mx-auto">
-            <a href="https://github.com/SilwalArj" target="_blank" 
-               class="social-card bg-gray-800/50 rounded-2xl p-8 text-center">
-                <div class="text-5xl mb-4 text-gray-300">
-                    <i class="fab fa-github"></i>
+            <div class="card p-6">
+                <h3 class="text-xl font-bold mb-6">Connect With Us</h3>
+                <div class="grid grid-cols-3 gap-4">
+                    <a href="https://github.com" 
+                       target="_blank"
+                       class="flex flex-col items-center p-4 bg-gray-800/50 rounded-xl hover:bg-gray-800 transition-colors group">
+                        <i class="fab fa-github text-3xl text-gray-400 group-hover:text-white mb-2"></i>
+                        <span class="text-sm">GitHub</span>
+                    </a>
+                    <a href="https://discord.com" 
+                       target="_blank"
+                       class="flex flex-col items-center p-4 bg-gray-800/50 rounded-xl hover:bg-gray-800 transition-colors group">
+                        <i class="fab fa-discord text-3xl text-blue-400 group-hover:text-blue-300 mb-2"></i>
+                        <span class="text-sm">Discord</span>
+                    </a>
+                    <a href="https://twitter.com" 
+                       target="_blank"
+                       class="flex flex-col items-center p-4 bg-gray-800/50 rounded-xl hover:bg-gray-800 transition-colors group">
+                        <i class="fab fa-twitter text-3xl text-blue-400 group-hover:text-blue-300 mb-2"></i>
+                        <span class="text-sm">Twitter</span>
+                    </a>
                 </div>
-                <h3 class="text-xl font-bold mb-2 text-green-400">GitHub</h3>
-                <p class="text-gray-400">Check out our open-source projects</p>
-            </a>
+            </div>
 
-            <a href="https://discord.com" target="_blank" 
-               class="social-card bg-gray-800/50 rounded-2xl p-8 text-center">
-                <div class="text-5xl mb-4 text-blue-400">
-                    <i class="fab fa-discord"></i>
+            <div class="card p-6">
+                <h3 class="text-xl font-bold mb-4">Frequently Asked</h3>
+                <div class="space-y-4">
+                    <div>
+                        <h4 class="font-medium text-green-400 mb-1">Can I contribute articles?</h4>
+                        <p class="text-gray-400 text-sm">Yes! We welcome guest posts. Email us your ideas.</p>
+                    </div>
+                    <div>
+                        <h4 class="font-medium text-green-400 mb-1">Technical issues with the site?</h4>
+                        <p class="text-gray-400 text-sm">Report bugs through our contact form or GitHub.</p>
+                    </div>
+                    <div>
+                        <h4 class="font-medium text-green-400 mb-1">Partnership opportunities?</h4>
+                        <p class="text-gray-400 text-sm">Yes, email us with partnership proposals.</p>
+                    </div>
                 </div>
-                <h3 class="text-xl font-bold mb-2 text-blue-400">Discord</h3>
-                <p class="text-gray-400">Join our developer community</p>
-            </a>
-
-            <a href="https://instagram.com" target="_blank" 
-               class="social-card bg-gray-800/50 rounded-2xl p-8 text-center">
-                <div class="text-5xl mb-4 text-pink-400">
-                    <i class="fab fa-instagram"></i>
-                </div>
-                <h3 class="text-xl font-bold mb-2 text-pink-400">Instagram</h3>
-                <p class="text-gray-400">Follow for tech tips & updates</p>
-            </a>
-        </div>
-
-        <div class="max-w-2xl mx-auto mt-16">
-            <div class="bg-gray-800/50 rounded-2xl p-8">
-                <h2 class="text-2xl font-bold mb-6 text-center">Send us a Message</h2>
-                <form id="contact-form">
-                    <div class="mb-6">
-                        <label class="block text-gray-400 mb-2">Your Name</label>
-                        <input type="text" 
-                               class="w-full bg-gray-900/50 border border-gray-700 rounded-lg px-4 py-3 focus:outline-none focus:border-green-500"
-                               placeholder="Enter your name">
-                    </div>
-                    <div class="mb-6">
-                        <label class="block text-gray-400 mb-2">Email Address</label>
-                        <input type="email" 
-                               class="w-full bg-gray-900/50 border border-gray-700 rounded-lg px-4 py-3 focus:outline-none focus:border-green-500"
-                               placeholder="you@example.com">
-                    </div>
-                    <div class="mb-6">
-                        <label class="block text-gray-400 mb-2">Message</label>
-                        <textarea rows="4" 
-                                  class="w-full bg-gray-900/50 border border-gray-700 rounded-lg px-4 py-3 focus:outline-none focus:border-green-500"
-                                  placeholder="Your message here..."></textarea>
-                    </div>
-                    <button type="submit" 
-                            class="w-full bg-green-500 hover:bg-green-600 text-white py-3 rounded-lg font-semibold">
-                        Send Message
-                    </button>
-                </form>
             </div>
         </div>
     </div>
-
-    <script>
-        document.getElementById('contact-form').addEventListener('submit', function(e) {
-            e.preventDefault();
-            alert('Thank you! Your message has been sent.');
-            this.reset();
-        });
-    </script>
-</body>
-</html>
+</div>
+{% endblock %}

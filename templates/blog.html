@@ -1,155 +1,83 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Blog | Paradise of Geeks</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="apple-touch-icon" sizes="180x180" href="static/images/apple-touch-icon.png">
-    <link rel="icon" type="image/png" sizes="32x32" href="static/images/favicon-32x32.png">
-    <link rel="icon" type="image/png" sizes="16x16" href="static/images/favicon-16x16.png">
-    <link rel="manifest" href="static/images/site.webmanifest">
-    <style>
-        .gradient-bg {
-            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
-        }
-        .post-card {
-            background: linear-gradient(145deg, rgba(30, 41, 59, 0.8), rgba(15, 23, 42, 0.8));
-            border: 1px solid rgba(74, 222, 128, 0.1);
-            transition: all 0.3s ease;
-        }
-        .post-card:hover {
-            transform: translateY(-5px);
-            border-color: rgba(74, 222, 128, 0.3);
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
-        }
-    </style>
-</head>
-<body class="gradient-bg text-gray-100 min-h-screen">
-    <nav class="sticky top-0 z-50 bg-gray-900/90 backdrop-blur-sm border-b border-gray-800">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex justify-between items-center h-16">
-                <a href="/" class="text-2xl font-bold bg-gradient-to-r from-green-400 to-blue-500 bg-clip-text text-transparent">
-                    <i class="fas fa-terminal mr-2"></i>Paradise of Geeks
-                </a>
-                <div class="flex items-center space-x-8">
-                    <a href="/" class="hover:text-green-400">Home</a>
-                    <a href="/blog" class="text-green-400 font-bold">Blog</a>
-                    <a href="/contact" class="hover:text-green-400">Contact</a>
+{% extends "base.html" %}
+
+{% block title %}Blog - Paradise of Geeks{% endblock %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto">
+    <div class="text-center mb-12">
+        <h1 class="text-4xl font-bold mb-4 gradient-text">Tech Articles</h1>
+        <p class="text-gray-400 text-lg">Browse all tutorials, guides, and tech insights</p>
+    </div>
+
+    <div class="mb-8">
+        <div class="flex flex-wrap gap-2 justify-center">
+            <a href="/blog" 
+               class="px-4 py-2 rounded-lg {% if not request.args.get('category') %}bg-green-500 text-white{% else %}bg-gray-800 text-gray-300 hover:bg-gray-700{% endif %}">
+                All Topics
+            </a>
+            {% for category in all_categories %}
+            <a href="/blog?category={{ category|lower }}"
+               class="px-4 py-2 rounded-lg {% if request.args.get('category') == category|lower %}bg-green-500 text-white{% else %}bg-gray-800 text-gray-300 hover:bg-gray-700{% endif %}">
+                {{ category }} ({{ category_counts[category] }})
+            </a>
+            {% endfor %}
+        </div>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        {% for post in posts %}
+        <div class="card group hover:shadow-2xl transition-all duration-300">
+            {% if post.thumbnail %}
+            <div class="h-48 overflow-hidden rounded-t-xl">
+                <img src="{{ post.thumbnail }}" 
+                     alt="{{ post.title }}"
+                     class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
+            </div>
+            {% else %}
+            <div class="h-48 bg-gradient-to-br from-green-500/20 to-blue-500/20 rounded-t-xl flex items-center justify-center">
+                <i class="fas fa-terminal text-4xl text-green-400/50"></i>
+            </div>
+            {% endif %}
+
+            <div class="p-6">
+                <div class="flex flex-wrap gap-2 mb-3">
+                    {% for category in post.categories[:2] %}
+                    <span class="px-3 py-1 bg-gray-800 text-gray-300 text-xs rounded-full">
+                        {{ category }}
+                    </span>
+                    {% endfor %}
+                </div>
+
+                <h3 class="text-xl font-bold mb-3 text-green-400 hover:text-green-300">
+                    <a href="/post/{{ post.id }}">{{ post.title }}</a>
+                </h3>
+
+                <p class="text-gray-400 mb-4 line-clamp-3">
+                    {{ post.preview }}
+                </p>
+
+                <div class="flex items-center justify-between text-sm text-gray-500">
+                    <div class="flex items-center">
+                        <i class="far fa-calendar mr-2"></i>
+                        {{ post.date }}
+                    </div>
+                    <a href="/post/{{ post.id }}" class="text-blue-400 hover:text-blue-300 font-medium">
+                        Read More <i class="fas fa-arrow-right ml-1"></i>
+                    </a>
                 </div>
             </div>
         </div>
-    </nav>
-
-
-    <div class="max-w-7xl mx-auto px-4 py-12">
-        <h1 class="text-4xl md:text-5xl font-bold mb-4 text-center">
-            <span class="bg-gradient-to-r from-green-400 to-blue-500 bg-clip-text text-transparent">
-                Tech Articles
-            </span>
-        </h1>
-        <p class="text-gray-400 text-center mb-8 max-w-2xl mx-auto">
-            Latest tutorials, guides, and insights about Linux, Python, AI, and web development.
-        </p>
-    </div>
-
-<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8" id="posts-container">
-    {% for post in posts %}
-    <div class="card post-card group">
-        {% if post.thumbnail %}
-        <div class="overflow-hidden rounded-t-xl">
-            <img src="{{ post.thumbnail }}" 
-                 alt="{{ post.title }}"
-                 class="w-full h-48 object-cover group-hover:scale-110 transition-transform duration-500">
-        </div>
         {% else %}
-        <div class="bg-gradient-to-br from-green-500/20 to-blue-500/20 h-48 rounded-t-xl flex items-center justify-center">
-            <i class="fas fa-code text-5xl text-green-400/30"></i>
+        <div class="col-span-full text-center py-12">
+            <i class="fas fa-newspaper text-5xl text-gray-600 mb-4"></i>
+            <h3 class="text-2xl font-bold mb-2">No Articles Found</h3>
+            <p class="text-gray-400">Check back soon for new content!</p>
         </div>
-        {% endif %}
-        
-        <div class="p-6">
-            <div class="flex justify-between items-start mb-4">
-                <span class="bg-green-500/20 text-green-400 px-3 py-1 rounded-full text-xs font-medium">
-                    Tech
-                </span>
-                <span class="text-gray-500 text-sm">{{ post.date }}</span>
-            </div>
-            <h3 class="text-xl font-bold mb-3 text-green-400">{{ post.title }}</h3>
-            <p class="text-gray-400 mb-6">{{ post.preview|truncate(100) }}</p>
-            <a href="/post/{{ post.id }}" class="btn btn-outline inline-flex items-center w-full justify-center">
-                Read Article <i class="fas fa-arrow-right ml-2"></i>
-            </a>
-        </div>
-    </div>
-    <div class="flex flex-wrap gap-2 mb-3">
-    {% for category in post.categories %}
-    <span class="bg-blue-500/20 text-blue-400 px-2 py-1 rounded text-xs">
-        {{ category }}
-    </span>
-    {% endfor %}
-</div>
-    {% endfor %}
-</div>
-        {% if posts|length >= 6 %}
-        <div class="text-center mt-12">
-            <button id="load-more" 
-                    class="bg-gray-800 hover:bg-gray-700 text-gray-300 px-6 py-3 rounded-lg font-semibold">
-                Load More Articles
-            </button>
-        </div>
-        {% endif %}
+        {% endfor %}
     </div>
 
-    <script>
-        let currentPage = 1;
-        document.getElementById('load-more')?.addEventListener('click', async function() {
-            this.disabled = true;
-            this.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> Loading...';
-            
-            try {
-                const response = await fetch(`/api/paginated-posts?page=${currentPage + 1}`);
-                const data = await response.json();
-                
-                if (data.success && data.posts.length > 0) {
-                    currentPage++;
-                    const container = document.getElementById('posts-container');
-                    
-                    data.posts.forEach(post => {
-                        const postHTML = `
-                            <div class="post-card rounded-2xl p-6">
-                                <div class="flex justify-between items-start mb-4">
-                                    <span class="bg-green-500/20 text-green-400 px-3 py-1 rounded-full text-xs font-medium">
-                                        Tech
-                                    </span>
-                                    <span class="text-gray-500 text-sm">${post.date}</span>
-                                </div>
-                                <h3 class="text-xl font-bold mb-3 text-green-400">${post.title}</h3>
-                                <p class="text-gray-400 mb-6">${post.content}</p>
-                                <a href="/post/${post.id}" 
-                                   class="inline-flex items-center text-blue-400 hover:text-blue-300 font-semibold">
-                                    Read Article
-                                    <i class="fas fa-arrow-right ml-2"></i>
-                                </a>
-                            </div>
-                        `;
-                        container.insertAdjacentHTML('beforeend', postHTML);
-                    });
-                    
-                    this.disabled = false;
-                    this.textContent = 'Load More Articles';
-
-                    if (data.posts.length < 6) {
-                        this.style.display = 'none';
-                    }
-                }
-            } catch (error) {
-                console.error('Error loading more posts:', error);
-                this.disabled = false;
-                this.textContent = 'Load More Articles';
-            }
-        });
-    </script>
-</body>
-</html>
+    <div class="mt-12 pt-8 border-t border-gray-800 text-center text-gray-500">
+        <p>Showing {{ posts|length }} article{% if posts|length != 1 %}s{% endif %}</p>
+    </div>
+</div>
+{% endblock %}

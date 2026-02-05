@@ -1,29 +1,24 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Page Not Found | Paradise of Geeks</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <style>
-        .gradient-bg {
-            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
-        }
-    </style>
-</head>
-<body class="gradient-bg text-gray-100 min-h-screen flex items-center justify-center">
-    <div class="text-center p-8">
-        <div class="text-6xl mb-6 text-green-400">
-            <i class="fas fa-exclamation-triangle"></i>
-        </div>
-        <h1 class="text-4xl font-bold mb-4">404 - Page Not Found</h1>
-        <p class="text-gray-400 mb-8 max-w-md mx-auto">
-            Oops! The page you're looking for doesn't exist.
-        </p>
-        <a href="/" class="bg-green-500 hover:bg-green-600 text-white px-6 py-3 rounded-lg font-semibold inline-block">
-            <i class="fas fa-home mr-2"></i> Back to Homepage
+{% extends "base.html" %}
+
+{% block title %}Page Not Found - Paradise of Geeks{% endblock %}
+
+{% block content %}
+<div class="text-center py-20">
+    <div class="text-8xl font-bold mb-6 gradient-text">404</div>
+    <h1 class="text-4xl font-bold mb-4">Page Not Found</h1>
+    <p class="text-gray-400 text-lg mb-8 max-w-2xl mx-auto">
+        Oops! The page you're looking for seems to have wandered off into the digital wilderness.
+    </p>
+    <div class="flex flex-col sm:flex-row gap-4 justify-center">
+        <a href="/" class="btn">
+            <i class="fas fa-home mr-2"></i>Back to Home
         </a>
+        <a href="/blog" class="btn btn-outline">
+            <i class="fas fa-newspaper mr-2"></i>Browse Articles
+        </a>
+        <button onclick="history.back()" class="btn btn-outline">
+            <i class="fas fa-arrow-left mr-2"></i>Go Back
+        </button>
     </div>
-</body>
-</html>
+</div>
+{% endblock %}

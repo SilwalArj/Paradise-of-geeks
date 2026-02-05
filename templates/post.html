@@ -1,198 +1,109 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ post.title }} | Paradise of Geeks</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <style>
-        .gradient-bg {
-            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
-        }
-        .article-content {
-            max-width: 800px;
-        }
-        .article-content h2 {
-            color: #4ade80;
-            font-size: 1.875rem;
-            font-weight: bold;
-            margin-top: 2rem;
-            margin-bottom: 1rem;
-        }
-        .article-content p {
-            margin-bottom: 1.5rem;
-            line-height: 1.8;
-        }
-        .article-content img {
-            max-width: 100%;
-            border-radius: 12px;
-            margin: 1.5rem 0;
-        }
-        .article-content code {
-            background: rgba(74, 222, 128, 0.1);
-            color: #4ade80;
-            padding: 2px 6px;
-            border-radius: 4px;
-            font-family: 'Monaco', 'Courier New', monospace;
-        }
-        .article-content pre {
-            background: #1e293b;
-            padding: 1.5rem;
-            border-radius: 8px;
-            overflow-x: auto;
-            margin: 1.5rem 0;
-        }
-    </style>
-    
-    {% block extra_meta %}
-    <script type="application/ld+json">
-    {{ structured_data_json|safe }}
-    </script>
-    {% endblock %}
-</head>
-<body class="gradient-bg text-gray-100 min-h-screen">
-    <nav class="sticky top-0 z-50 bg-gray-900/90 backdrop-blur-sm border-b border-gray-800">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex justify-between items-center h-16">
-                <a href="/" class="text-2xl font-bold bg-gradient-to-r from-green-400 to-blue-500 bg-clip-text text-transparent">
-                    <i class="fas fa-terminal mr-2"></i>Paradise of Geeks
-                </a>
-                <div class="flex items-center space-x-8">
-                    <a href="/" class="hover:text-green-400">Home</a>
-                    <a href="/blog" class="hover:text-green-400">Blog</a>
-                </div>
-            </div>
-        </div>
-    </nav>
+{% extends "base.html" %}
 
-    <div class="max-w-4xl mx-auto px-4 py-12">
-        <a href="/blog" class="inline-flex items-center text-blue-400 hover:text-blue-300 mb-8">
-            <i class="fas fa-arrow-left mr-2"></i> Back to Articles
-        </a>
+{% block title %}{{ post.title }} - Paradise of Geeks{% endblock %}
 
-        <div class="mb-12">
-            <span class="bg-green-500/20 text-green-400 px-4 py-1 rounded-full text-sm font-medium mb-4 inline-block">
-                Featured
+{% block extra_meta %}
+<script type="application/ld+json">
+{{ structured_data_json|safe }}
+</script>
+{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto">
+    <a href="/blog" class="inline-flex items-center text-blue-400 hover:text-blue-300 mb-8">
+        <i class="fas fa-arrow-left mr-2"></i> Back to Articles
+    </a>
+
+    <div class="mb-12">
+        <div class="flex flex-wrap gap-2 mb-4">
+            {% for category in post.categories %}
+            <span class="px-4 py-2 bg-gray-800 text-gray-300 text-sm rounded-full">
+                {{ category }}
             </span>
-            <h1 class="text-4xl md:text-5xl font-bold mb-6 gradient-text">{{ post.title }}</h1>
-            <div class="flex items-center text-gray-500 mb-8">
-                <i class="far fa-calendar mr-2"></i>
-                <span>{{ post.date }}</span>
-                <span class="mx-4">•</span>
-                <i class="far fa-clock mr-2"></i>
-                <span>5 min read</span>
-            </div>
-        <div class="card">
-            {% if post.content %}
-                <div class="blog-content">
-                    {{ post.content|safe }}
-                    {% include 'related_posts.html' %}
-                </div>
-            {% else %}
-                <p>Content not available</p>
-            {% endif %}
-
-        </div>
-            
-        <div class="my-12 p-6 bg-gray-800/50 rounded-2xl text-center">
-            <p class="text-gray-400 mb-4">Advertisement</p>
-            <div class="h-[90px] bg-gradient-to-r from-gray-700 to-gray-800 rounded-xl flex items-center justify-center">
-                <div class="text-center">
-                    <i class="fas fa-ad text-2xl text-gray-600 mb-2"></i>
-                    <p class="text-gray-500">AdSense Slot</p>
-                </div>
-            </div>
-            <p class="text-gray-500 text-sm mt-4">
-                Support our blog by viewing ads
-            </p>
+            {% endfor %}
         </div>
 
-        <div class="flex flex-wrap gap-4 mb-12">
-            <button onclick="shareOnTwitter()" 
-                    class="flex items-center bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg">
-                <i class="fab fa-twitter mr-2"></i> Share on Twitter
-            </button>
-            <button onclick="shareOnLinkedIn()" 
-                    class="flex items-center bg-blue-700 hover:bg-blue-800 text-white px-4 py-2 rounded-lg">
-                <i class="fab fa-linkedin mr-2"></i> Share on LinkedIn
-            </button>
-            <button onclick="copyLink()" 
-                    class="flex items-center bg-gray-700 hover:bg-gray-600 text-white px-4 py-2 rounded-lg">
-                <i class="fas fa-link mr-2"></i> Copy Link
-            </button>
+        <h1 class="text-4xl md:text-5xl font-bold mb-6">{{ post.title }}</h1>
+
+        <div class="flex items-center text-gray-500 mb-8">
+            <i class="far fa-calendar mr-2"></i>
+            <span>{{ post.date }}</span>
+            <span class="mx-4">•</span>
+            <i class="far fa-clock mr-2"></i>
+            <span>5 min read</span>
         </div>
+
+        {% if post.thumbnail %}
+        <div class="mb-8 rounded-2xl overflow-hidden">
+            <img src="{{ post.thumbnail }}" 
+                 alt="{{ post.title }}"
+                 class="w-full h-auto max-h-96 object-cover">
+        </div>
+        {% endif %}
     </div>
 
-    <footer class="bg-gray-900/50 border-t border-gray-800 py-8 px-4 mt-12">
-        <div class="max-w-7xl mx-auto">
-            <div class="flex flex-col md:flex-row justify-between items-center">
-                <div class="mb-6 md:mb-0">
-                    <div class="text-2xl font-bold bg-gradient-to-r from-green-400 to-blue-500 bg-clip-text text-transparent mb-2">
-                        Paradise of Geeks
-                    </div>
-                    <p class="text-gray-500">Tech blog powered by Blogger</p>
-                </div>
-                <div class="text-center text-gray-600">
-                    &copy; 2024 All articles fetched from Blogger
-                </div>
-            </div>
+    <article class="prose prose-lg prose-invert max-w-none mb-12">
+        <div class="blog-content">
+            {{ post.content|safe }}
         </div>
-    </footer>
+    </article>
 
-    <script>
-        function shareOnTwitter() {
-            const url = encodeURIComponent(window.location.href);
-            const text = encodeURIComponent("{{ post.title }}");
-            window.open(`https://twitter.com/intent/tweet?url=${url}&text=${text}`, '_blank');
-        }
-        
-        function shareOnLinkedIn() {
-            const url = encodeURIComponent(window.location.href);
-            window.open(`https://www.linkedin.com/sharing/share-offsite/?url=${url}`, '_blank');
-        }
-        
-        function copyLink() {
-            navigator.clipboard.writeText(window.location.href);
-            alert('Link copied to clipboard!');
-        }
+    <div class="flex flex-wrap gap-4 mb-12">
+        <button onclick="shareOnTwitter()" 
+                class="flex items-center bg-blue-500 hover:bg-blue-600 text-white px-4 py-3 rounded-lg">
+            <i class="fab fa-twitter mr-2"></i> Twitter
+        </button>
+        <button onclick="shareOnLinkedIn()" 
+                class="flex items-center bg-blue-700 hover:bg-blue-800 text-white px-4 py-3 rounded-lg">
+            <i class="fab fa-linkedin mr-2"></i> LinkedIn
+        </button>
+        <button onclick="copyLink()" 
+                class="flex items-center bg-gray-700 hover:bg-gray-600 text-white px-4 py-3 rounded-lg">
+            <i class="fas fa-link mr-2"></i> Copy Link
+        </button>
+    </div>
 
-        fetch('/api/analytics', { method: 'POST' });
+    {% if related_posts %}
+    <div class="mt-12 pt-12 border-t border-gray-800">
+        <h2 class="text-2xl font-bold mb-6">Related Articles</h2>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {% for related in related_posts %}
+            <a href="/post/{{ related.id }}" class="group">
+                <div class="bg-gray-800/50 rounded-xl p-4 hover:bg-gray-800 transition-colors">
+                    {% if related.thumbnail %}
+                    <div class="h-40 mb-4 overflow-hidden rounded-lg">
+                        <img src="{{ related.thumbnail }}" 
+                             alt="{{ related.title }}"
+                             class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
+                    </div>
+                    {% endif %}
+                    <h3 class="font-bold text-green-400 group-hover:text-green-300 mb-2">
+                        {{ related.title }}
+                    </h3>
+                    <p class="text-gray-400 text-sm">{{ related.date }}</p>
+                </div>
+            </a>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+</div>
 
-        document.addEventListener('DOMContentLoaded', () => {
-            const postTitle = document.querySelector('h1')?.textContent || 'Unknown Post';
-            const postId = window.location.pathname.split('/').pop();
+<script>
+function shareOnTwitter() {
+    const url = encodeURIComponent(window.location.href);
+    const text = encodeURIComponent("{{ post.title }}");
+    window.open(`https://twitter.com/intent/tweet?url=${url}&text=${text}`, '_blank');
+}
 
-            if (typeof trackEvent === 'function') {
-                trackEvent('view_post', {
-                    post_id: postId,
-                    post_title: postTitle,
-                    category: 'blog'
-                });
-            }
-            
-            let timeStart = Date.now();
-            window.addEventListener('beforeunload', () => {
-                const timeSpent = Date.now() - timeStart;
-                if (timeSpent > 10000) { 
-                    trackEvent('post_read', {
-                        post_id: postId,
-                        read_time: Math.round(timeSpent / 1000), 
-                        completion_rate: this.calculateCompletion()
-                    });
-                }
-            });
-        });
-    </script>
-    <div class="reading-progress" id="readingProgress"></div>
+function shareOnLinkedIn() {
+    const url = encodeURIComponent(window.location.href);
+    window.open(`https://www.linkedin.com/sharing/share-offsite/?url=${url}`, '_blank');
+}
 
-    <script>
-    window.addEventListener('scroll', () => {
-        const winScroll = document.body.scrollTop || document.documentElement.scrollTop;
-        const height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
-        const scrolled = (winScroll / height) * 100;
-        document.getElementById('readingProgress').style.width = scrolled + '%';
-    });
-    </script>
-</body>
-</html>
+function copyLink() {
+    navigator.clipboard.writeText(window.location.href);
+    alert('Link copied to clipboard!');
+}
+</script>
+{% endblock %}
